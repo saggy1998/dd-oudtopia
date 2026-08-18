@@ -15,9 +15,9 @@ function App() {
         
         {/* Bottom label */}
         <div className="left-label">
-          <span className="lbl-eyebrow">Signature Fragrance</span>
+          <span className="lbl-eyebrow">Luxury Wedding Stationery</span>
           <span className="lbl-name">OudTopia</span>
-          <span className="lbl-sub">Eau de Parfum · 50ml</span>
+          <span className="lbl-sub">Bespoke Wedding Cards · 2026</span>
         </div>
       </div>
       <MoodBoardContent />

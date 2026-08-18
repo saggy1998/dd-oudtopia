@@ -184,20 +184,52 @@ body {
 
 .main-title {
   font-family: var(--serif);
-  font-size: clamp(1.6rem, 6.5vw, 3.5rem);   /* scaled nicely for mobile */
+  font-size: clamp(1.6rem, 6.5vw, 3.5rem);
   font-weight: 300; line-height: 1.12;
   color: var(--black); margin-bottom: 0.25rem;
-  opacity: 0; animation: fadeUp 0.9s 0.4s forwards;
 }
+
+/* Each br-separated line animates independently via span wrappers */
+.main-title .line1 {
+  display: block;
+  opacity: 0;
+  animation: staggerFadeUp 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.2s forwards;
+}
+.main-title .line2 {
+  display: block;
+  opacity: 0;
+  animation: staggerFadeUp 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.45s forwards;
+}
+
+/* Gold shimmer sweep on the em word */
 .main-title em {
   font-style: italic;
-  color: var(--gold-dark);
   display: inline-block;
-  animation: goldGlow 4s ease-in-out infinite;
+  position: relative;
+  color: var(--gold-dark);
+  /* base text is gold */
 }
-@keyframes goldGlow {
-  0%, 100% { color: var(--gold-dark); text-shadow: 0 0 0px transparent; }
-  50% { color: #A67C1E; text-shadow: 0 0 10px rgba(201,168,76,0.3); }
+/* The shimmer is a moving highlight stripe via ::after overlay */
+.main-title em::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 30%,
+    rgba(255, 230, 130, 0.85) 48%,
+    rgba(255, 255, 200, 0.95) 52%,
+    transparent 70%
+  );
+  background-size: 250% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  background-position: -100% 0;
+  animation: shimmerSweep 4s ease-in-out infinite;
+  animation-delay: 1.8s; /* wait for text to appear first */
+  pointer-events: none;
 }
 
 .tagline {
@@ -205,24 +237,54 @@ body {
   font-size: clamp(0.78rem, 3.2vw, 1.15rem);
   font-weight: 300; font-style: italic;
   color: rgba(10,10,10,0.5); margin-bottom: 1.2rem;
-  opacity: 0; animation: fadeUp 0.9s 0.6s forwards;
+  opacity: 0;
+  animation: staggerFadeUp 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.75s forwards;
 }
 
 .gold-divider {
-  width: 60px; height: 1px;
-  background: linear-gradient(90deg, var(--gold), var(--gold-light), var(--gold-dark), var(--gold));
-  background-size: 300% 100%;
+  width: 60px; height: 2px;
+  position: relative;
+  overflow: hidden;
+  background: var(--gold-dark);
   margin-bottom: 1.2rem;
   opacity: 0;
-  animation: expandW 1s 0.8s forwards, shimmerGlow 5s infinite linear;
+  border-radius: 1px;
+  animation: expandW 1s cubic-bezier(0.22, 1, 0.36, 1) 1.05s forwards;
+}
+/* Shimmer sweep on the divider bar */
+.gold-divider::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 240, 160, 0.9) 40%,
+    rgba(255, 255, 220, 1) 50%,
+    rgba(255, 240, 160, 0.9) 60%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  background-position: -100% 0;
+  animation: dividerShimmer 3s ease-in-out infinite;
+  animation-delay: 2s;
 }
 @keyframes expandW {
   from { width: 0; opacity: 0; }
-  to   { width: 60px; opacity: 1; }
+  to   { width: 80px; opacity: 1; }
 }
-@keyframes shimmerGlow {
-  0% { background-position: 0% 50%; }
-  100% { background-position: 300% 50%; }
+@keyframes dividerShimmer {
+  0%   { background-position: -100% 0; }
+  50%  { background-position: 200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes shimmerSweep {
+  0%   { background-position: -100% 0; }
+  40%  { background-position: 200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes staggerFadeUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .descriptor {
@@ -230,44 +292,80 @@ body {
   letter-spacing: 0.04em; line-height: 1.8;
   color: rgba(10,10,10,0.62); max-width: 360px;
   margin-bottom: 1.2rem;
-  opacity: 0; animation: fadeUp 0.9s 0.9s forwards;
+  opacity: 0;
+  animation: staggerFadeUp 0.9s cubic-bezier(0.22, 1, 0.36, 1) 1.25s forwards;
 }
 
 /* ── ATTRIBUTE PILLS ── */
 .pills {
   display: flex; flex-wrap: wrap; gap: 0.4rem;
   margin-bottom: 1.2rem;
-  opacity: 0; animation: fadeUp 0.9s 1.1s forwards;
+  opacity: 0;
+  animation: staggerFadeUp 0.9s cubic-bezier(0.22, 1, 0.36, 1) 1.5s forwards;
 }
 .pill {
   padding: 0.28rem 0.75rem;
   border: 1px solid rgba(139,105,20,0.3);
   font-size: 0.52rem; letter-spacing: 0.16em;
   text-transform: uppercase; color: var(--gold-dark);
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   cursor: default;
   background: rgba(201,168,76,0.03);
-  animation: pillPulse 6s ease-in-out infinite alternate;
+  /* needed for the shimmer stripe to clip inside */
+  position: relative;
+  overflow: hidden;
+  /* smooth transitions for hover state */
+  transition:
+    color 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    background 0.3s ease;
 }
-.pill:nth-child(even) {
-  animation-delay: 1.5s;
+
+/* ── Gold shimmer stripe (the "light catching" sweep) ── */
+.pill::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -140%;
+  width: 100%;
+  height: 100%;
+  /* luminous metallic gold highlight stripe */
+  background: linear-gradient(
+    110deg,
+    transparent            15%,
+    rgba(201, 168, 76, 0.25) 35%,
+    rgba(255, 245, 190, 0.85) 50%,
+    rgba(201, 168, 76, 0.25) 65%,
+    transparent            85%
+  );
+  transition: none;
+  pointer-events: none;
+  transform: skewX(-20deg);
 }
-@keyframes pillPulse {
-  0% { border-color: rgba(139,105,20,0.25); transform: translateY(0); }
-  50% { border-color: rgba(201,168,76,0.5); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(201,168,76,0.12); }
-  100% { border-color: rgba(139,105,20,0.25); transform: translateY(0); }
+
+/* On hover: slide the stripe across slowly in 2.4s */
+.pill:hover::before,
+.pill:active::before {
+  animation: pillShimmer 2.4s ease-in-out infinite;
 }
+@keyframes pillShimmer {
+  0%   { left: -140%; }
+  65%  { left: 140%; }
+  100% { left: 140%; }
+}
+
+/* Hover state: solid border glow, light gold fill, no float/lift */
 .pill:hover, .pill:active {
-  background: var(--gold-dark); color: var(--white);
-  border-color: var(--gold-dark);
-  transform: translateY(-2px) scale(1.03);
-  box-shadow: 0 4px 14px rgba(139,105,20,0.25);
+  border-color: rgba(201,168,76,0.75);
+  color: var(--gold-dark);
+  background: rgba(201,168,76,0.08);
+  box-shadow: 0 2px 12px rgba(201,168,76,0.2), inset 0 0 0 1px rgba(201,168,76,0.25);
 }
 
 /* ── COLOUR SWATCHES ── */
 .swatch-row {
   display: flex; gap: 0; margin-bottom: 1.4rem;
-  opacity: 0; animation: fadeUp 0.9s 1.2s forwards;
+  opacity: 0;
+  animation: staggerFadeUp 0.9s cubic-bezier(0.22, 1, 0.36, 1) 1.7s forwards;
 }
 .sw {
   width: 24px; height: 24px;
@@ -305,7 +403,8 @@ body {
 .bottom-row {
   display: flex; align-items: flex-end;
   justify-content: space-between;
-  opacity: 0; animation: fadeUp 0.9s 1.4s forwards;
+  opacity: 0;
+  animation: staggerFadeUp 0.9s cubic-bezier(0.22, 1, 0.36, 1) 1.9s forwards;
 }
 .type-specimen {
   display: flex; flex-direction: column; gap: 0.15rem;

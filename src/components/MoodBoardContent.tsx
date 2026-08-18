@@ -6,26 +6,26 @@ export default function MoodBoardContent() {
 
       <div className="content">
         <h1 className="main-title">
-          Where <em>Oud</em><br />
-          Becomes Utopia
+          <span className="line1">Where <em data-text="Love">Love</em></span>
+          <span className="line2">Becomes Legacy</span>
         </h1>
-        <p className="tagline">"Luxury distilled into every drop."</p>
+        <p className="tagline">"Every union deserves a timeless beginning."</p>
 
         <div className="gold-divider"></div>
 
         <p className="descriptor">
-          A luxury perfume house rooted in the ancient tradition of oud —
-          translated into modern elegance for those who seek depth,
-          warmth, and rare distinction.
+          Bespoke luxury wedding stationery crafted for those who believe
+          the first impression of forever should be extraordinary — 
+          layered in gold, sealed with intention.
         </p>
 
         {/* Attribute pills */}
         <div className="pills">
-          <span className="pill">Heritage</span>
-          <span className="pill">Authenticity</span>
+          <span className="pill">Bespoke</span>
+          <span className="pill">Heirloom</span>
           <span className="pill">Luxury</span>
-          <span className="pill">Exclusivity</span>
-          <span className="pill">Oud · Amber · Musk</span>
+          <span className="pill">Timeless</span>
+          <span className="pill">Gold · Ivory · Black</span>
         </div>
 
         {/* Colour palette */}
@@ -33,7 +33,7 @@ export default function MoodBoardContent() {
           <div className="sw sw1" data-name="Midnight"></div>
           <div className="sw sw2" data-name="Gold"></div>
           <div className="sw sw3" data-name="Champagne"></div>
-          <div className="sw sw4" data-name="Amber"></div>
+          <div className="sw sw4" data-name="Blush"></div>
           <div className="sw sw5" data-name="Ivory"></div>
         </div>
 

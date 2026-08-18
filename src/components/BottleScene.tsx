@@ -15,7 +15,7 @@ export default function BottleScene() {
     <div className="bottle-video-container">
       <video
         ref={videoRef}
-        src="/perfume_video.mp4"
+        src="/wedding_card.mp4"
         autoPlay
         loop
         muted
