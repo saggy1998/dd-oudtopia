@@ -1,21 +1,26 @@
 import { useRef, useEffect } from 'react'
 
-export default function BottleScene() {
+interface BottleSceneProps {
+  activeVideo: string
+}
+
+export default function BottleScene({ activeVideo }: BottleSceneProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
 
   useEffect(() => {
     if (videoRef.current) {
+      videoRef.current.load()
       videoRef.current.play().catch(() => {
         // Autoplay fallback if browser blocks
       })
     }
-  }, [])
+  }, [activeVideo])
 
   return (
     <div className="bottle-video-container">
       <video
         ref={videoRef}
-        src="/wedding_card.mp4"
+        src={activeVideo}
         autoPlay
         loop
         muted
