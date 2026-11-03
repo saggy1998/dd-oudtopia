@@ -181,7 +181,9 @@ em { font-style: italic; color: var(--gold-deep); }
 .tot-detail { display: grid; grid-template-rows: 0fr; opacity: 0; transition: grid-template-rows 0.9s var(--ease), opacity 0.6s; }
 .tot-detail > div { overflow: hidden; }
 .tot-side.is-on .tot-detail { grid-template-rows: 1fr; opacity: 1; transition-delay: 0.25s; }
-.tot-whisper { position: absolute; top: 0.9rem; left: 50%; translate: -50% 0; color: var(--ink-soft); white-space: nowrap; pointer-events: none; }
+.tot-whisper { position: absolute; top: 0.9rem; left: 50%; translate: -50% 0; color: #fff; mix-blend-mode: difference; white-space: nowrap; pointer-events: none; } /* reads over dark and light photos alike */
+.tot-side.is-dark:not(.is-on) .tot-text { color: #fff; }
+.tot-side.is-dark:not(.is-on) :is(.who, .tot-num) { color: rgb(255 255 255 / 0.85); }
 
 .who { display: flex; align-items: center; gap: 0.6rem; margin: 0 0 0.6rem; font-size: 0.62rem; font-weight: 500; letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold-deep); }
 .who::before { content: ''; flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--liquid); }

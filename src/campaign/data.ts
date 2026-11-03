@@ -6,7 +6,7 @@ export const PHONES = [
   { label: '+44 7400 666885', href: 'tel:+447400666885' },
 ]
 
-export interface Shot { src: string; w: number; h: number; alt: string }
+export interface Shot { src: string; w: number; h: number; alt: string; dark?: boolean; pos?: string } // dark: white type over it; pos: crop focus
 
 export const COUPLE_STUDIO: Shot = {
   src: '/campaign/couple-studio.webp', w: 1080, h: 1350,
@@ -32,7 +32,7 @@ export const PERFUMES = [
       ['Base', 'Raspberry, musk, sandalwood, amber'],
     ],
     shots: [
-      { src: '/campaign/purple-marble.webp', w: 1024, h: 1536, alt: 'Purple Drip bottle on a marble plinth with red apples and strawberries on pink satin' },
+      { src: '/campaign/purple-spray.webp', w: 1024, h: 1536, alt: 'Purple Drip bottle misting a spray of scent, on dark glass with rose petals', dark: true, pos: '50% 28%' },
       { src: '/campaign/purple-berries.webp', w: 1086, h: 1448, alt: 'Purple Drip bottle with strawberries, blackcurrants, apple and orange on blush satin' },
     ],
   },

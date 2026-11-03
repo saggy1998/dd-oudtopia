@@ -51,7 +51,7 @@ export function Scent({ copy, copied }: { copy: (text: string) => void; copied: 
     <section className="pane pane-scent" id="scent" aria-label="The scent">
       <div className={`tot pi ${pick ? 'is-picked' : ''}`} role="group" aria-label="Choose his or hers">
         {PERFUMES.map((p, i) => (
-          <div className={`tot-side ${pick === p.id ? 'is-on' : ''}`} key={p.id} style={liquid(p.liquid)}>
+          <div className={`tot-side ${pick === p.id ? 'is-on' : ''} ${p.shots[0].dark ? 'is-dark' : ''}`} key={p.id} style={liquid(p.liquid)}>
             <button
               className="tot-hit"
               aria-label={`${p.who}: ${p.name}`}
@@ -62,7 +62,7 @@ export function Scent({ copy, copied }: { copy: (text: string) => void; copied: 
                 if (next) sprayFrom(e.currentTarget, p.liquid)
               }}
             >
-              <img src={p.shots[0].src} alt={p.shots[0].alt} width={p.shots[0].w} height={p.shots[0].h} />
+              <img src={p.shots[0].src} alt={p.shots[0].alt} width={p.shots[0].w} height={p.shots[0].h} style={{ objectPosition: p.shots[0].pos }} />
             </button>
             <div className="tot-text">
               <p className="tot-num">0{i + 1}</p>
