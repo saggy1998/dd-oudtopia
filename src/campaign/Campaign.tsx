@@ -1,19 +1,44 @@
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useLayoutEffect, useRef, useState, type MouseEvent } from 'react'
 import gsap from 'gsap'
-import { Observer } from 'gsap/Observer'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { ScrambleTextPlugin } from 'gsap/ScrambleTextPlugin'
 import { SplitText } from 'gsap/SplitText'
-import { ArrowUpRight } from 'lucide-react'
-import { CREDITS, PERFUMES, SITE, TIKTOK } from './data'
+import { CREDITS, SITE, TIKTOK } from './data'
 import GoldDust from './GoldDust'
-import { Booking, Drop, Gallery, MOTION, Phones, scramble, sprayFrom } from './panels'
+import { Drop, MOTION, Phones } from './panels'
+import { Scent, Story } from './pages'
 import './campaign.css'
 
-gsap.registerPlugin(Observer, ScrambleTextPlugin, SplitText)
+gsap.registerPlugin(ScrollTrigger, ScrambleTextPlugin, SplitText)
+
+// Glide to a part of the page; nothing opens, nothing jumps.
+const scrollTo = (id: string) => document.getElementById(id)!.scrollIntoView({ behavior: 'smooth' })
+
+// Words rise out of masks and .rv items fade up as they scroll into view.
+function reveal(scope: string) {
+  gsap.utils.toArray<HTMLElement>(`${scope} .split`).forEach((el) => {
+    const { words } = SplitText.create(el, { type: 'words', mask: 'words' })
+    gsap.from(words, { yPercent: 110, stagger: 0.05, duration: 1.1, ease: 'expo.out', scrollTrigger: { trigger: el, start: 'top 88%' } })
+  })
+  ScrollTrigger.batch(`${scope} .rv`, {
+    start: 'top 92%',
+    once: true,
+    onEnter: (els) => gsap.fromTo(els, { y: 28, opacity: 0 }, { y: 0, opacity: 1, stagger: 0.07, duration: 1, ease: 'expo.out', overwrite: true }),
+  })
+  gsap.set(`${scope} .rv`, { opacity: 0 })
+  // The opening photograph of each half has its own entrance and never drifts.
+  gsap.utils.toArray<HTMLElement>(`${scope} .pg-body .ph img`).forEach((img) => {
+    gsap.from(img, { clipPath: 'inset(100% 0% 0% 0%)', scale: 1.12, duration: 1.6, ease: 'expo.inOut', clearProps: 'clipPath,scale', scrollTrigger: { trigger: img, start: 'top 85%' } })
+  })
+  // Gentle parallax drift on the photographs themselves (whole figure moves, nothing is cropped).
+  gsap.utils.toArray<HTMLElement>(`${scope} .pg-body .ph`).forEach((ph) => {
+    gsap.fromTo(ph, { y: 40 }, { y: -40, ease: 'none', scrollTrigger: { trigger: ph, start: 'top bottom', end: 'bottom top', scrub: true } })
+  })
+}
 
 export default function Campaign() {
   const root = useRef<HTMLDivElement>(null)
-  const [booking, setBooking] = useState(false)
+  const [here, setHere] = useState<'story' | 'scent'>('story')
   const [copied, setCopied] = useState<string | null>(null)
 
   const copy = async (text: string) => {
@@ -26,7 +51,10 @@ export default function Campaign() {
     }
   }
 
-  // Setup: intro, cursor, magnetic buttons.
+  const book = () => scrollTo('book')
+  const tab = (id: string) => (e: MouseEvent) => { e.preventDefault(); scrollTo(id) }
+
+  // Setup: intro, cursor, magnetic buttons, book band.
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
       SplitText.create('.ptitle', { type: 'words', mask: 'words', wordsClass: 'w' })
@@ -39,37 +67,33 @@ export default function Campaign() {
           .from('.loader-word span', { yPercent: 110, stagger: 0.035, duration: 0.7 }, '-=0.5')
           .to('.loader', { clipPath: 'inset(0% 0% 100% 0%)', duration: 0.9, ease: 'expo.inOut' }, '+=0.15')
           .set('.loader', { display: 'none' })
-          .from('.stage-img img.is-active', { clipPath: 'inset(100% 0% 0% 0%)', scale: 1.2, duration: 1.4, ease: 'expo.inOut', clearProps: 'all' }, '-=0.5')
-          .from('.big-num span', { yPercent: 100, duration: 1.2 }, '<0.5')
-          .from('.ptitle .w', { yPercent: 110, stagger: 0.06, duration: 1 }, '<')
-          .from('.info .pi, .caption, .strip button', { y: 24, opacity: 0, stagger: 0.04, duration: 0.9, clearProps: 'transform' }, '<0.1')
-          .from('.credits li', { clipPath: 'inset(0% 100% 0% 0%)', stagger: 0.05, duration: 0.9, clearProps: 'clipPath' }, '<0.2')
-          .from('.badge', { scale: 0, opacity: 0, duration: 0.8, ease: 'back.out(1.8)' }, '<0.2')
-          .from('.chrome', { opacity: 0, y: (i) => (i === 0 ? -20 : 20), duration: 0.9, clearProps: 'all' }, '<')
+          .from('.hero-ph img', { clipPath: 'inset(100% 0% 0% 0%)', scale: 1.15, duration: 1.5, ease: 'expo.inOut', clearProps: 'clipPath,scale' }, '-=0.5')
+          .from('.ptitle .w', { yPercent: 110, stagger: 0.07, duration: 1.1 }, '<0.4')
+          .from('.hero .pi', { y: 24, opacity: 0, stagger: 0.08, duration: 0.9, clearProps: 'transform' }, '<0.2')
+          .from('.nav', { opacity: 0, y: -16, duration: 0.9, clearProps: 'all' }, '<')
         gsap.utils.toArray<HTMLElement>('.scramble').forEach((s) => {
           // Keep the text on the element: a re-run (StrictMode) would otherwise read the already-blanked node.
           const text = (s.dataset.text ??= s.textContent ?? '')
           s.textContent = ''
-          gsap.to(s, { delay: 2.6, duration: 1.2, scrambleText: { text, chars: 'OUDTOPIA', speed: 0.5 } })
+          gsap.to(s, { delay: 2.4, duration: 1.2, scrambleText: { text, chars: 'OUDTOPIA', speed: 0.5 } })
         })
+        reveal('.page')
+        reveal('.book')
+        reveal('.foot')
       })
+
+      // The tab for whichever half is on screen reads as current.
+      ScrollTrigger.create({ trigger: '.scent', start: 'top 60%', onToggle: (self) => setHere(self.isActive ? 'scent' : 'story') })
 
       mm.add(`${MOTION} and (pointer: fine)`, () => {
         const cursor = document.querySelector<HTMLElement>('.cursor')!
-        const label = cursor.querySelector('span')!
         const cx = gsap.quickTo(cursor, 'x', { duration: 0.3, ease: 'power3' })
         const cy = gsap.quickTo(cursor, 'y', { duration: 0.3, ease: 'power3' })
-        // Re-read the label on every move: the gallery flips between "Prev" and "Next" as you cross its middle.
         const move = (e: PointerEvent) => {
           cursor.style.opacity = '1'
           cx(e.clientX)
           cy(e.clientY)
-          const t = e.target as Element
-          const labelled = t.closest<HTMLElement>('[data-cursor]')
-          const own = labelled && (!t.closest('a, button') || labelled.matches('button'))
-          label.textContent = own ? labelled.dataset.cursor! : ''
-          cursor.classList.toggle('is-view', !!own)
-          cursor.classList.toggle('is-link', !own && !!t.closest('a, button'))
+          cursor.classList.toggle('is-link', !!(e.target as Element).closest('a, button'))
         }
         window.addEventListener('pointermove', move)
         document.documentElement.classList.add('has-cursor')
@@ -108,72 +132,46 @@ export default function Campaign() {
       <GoldDust />
       <div className="cursor" aria-hidden="true"><span /></div>
 
-      <header className="nav chrome">
+      <header className="nav">
         <a className="brand" href={SITE} target="_blank" rel="noreferrer" aria-label="OudTopia website">
           <Drop className="brand-drop" />
           <span>OudTopia</span>
         </a>
-        <p className="nav-tag">Campaign <i>—</i> Fragrance <i>—</i> Editorial</p>
-        <button className="btn btn-dark btn-sm" data-magnetic onClick={() => setBooking(true)}>Book now</button>
+        <nav className="tabs" aria-label="Sections">
+          <a className="tab" href="#story" aria-current={here === 'story' ? 'true' : undefined} onClick={tab('story')}>His &amp; Hers Story<sup>01</sup></a>
+          <a className="tab" href="#scent" aria-current={here === 'scent' ? 'true' : undefined} onClick={tab('scent')}>The Scent<sup>02</sup></a>
+        </nav>
+        <button className="btn" data-magnetic onClick={book}>Book now</button>
       </header>
 
-      <main className="stage">
-        <aside className="info">
-          <div>
-            <p className="eyebrow scramble pi">Project — OudTopia</p>
-            <h1 className="ptitle">Two drops. <br />One <em>utopia.</em></h1>
-            <p className="lead pi">
-              A campaign for two fragrances — playful, fruity Purple Drip and warm, creamy Crème Vanille Elixir —
-              styled for the season of celebration.
-            </p>
+      <main>
+        <Story onBook={book} />
+        <Scent />
+
+        <section className="book" id="book">
+          <Drop className="book-drop rv" />
+          <p className="eyebrow rv">Book now</p>
+          <h2 className="book-title split">Call or text <em>to book the pair.</em></h2>
+          <div className="book-phones rv"><Phones copy={copy} copied={copied} /></div>
+          <div className="ctas rv">
+            <a className="link-gold" href={TIKTOK} target="_blank" rel="noreferrer">Message us on TikTok</a>
           </div>
-
-          <dl className="credits">
-            {CREDITS.map((c) => (
-              <div key={c.role} onPointerEnter={(e) => scramble(e.currentTarget.querySelector('dd')!, c.name, 0.8)}>
-                <dt>{c.role}</dt>
-                <dd>{c.name}</dd>
-              </div>
-            ))}
-            <div>
-              <dt>Fragrances</dt>
-              <dd className="frags">
-                {PERFUMES.map((p) => (
-                  <a key={p.name} href={p.url} target="_blank" rel="noreferrer" onPointerEnter={(e) => sprayFrom(e.currentTarget, p.liquid)}>
-                    <span className="swatch" style={{ background: p.liquid }} />{p.name}
-                  </a>
-                ))}
-              </dd>
-            </div>
-          </dl>
-
-          <div className="ctas pi">
-            <button className="btn btn-dark" data-magnetic onClick={() => setBooking(true)}>
-              Book now <ArrowUpRight size={16} />
-            </button>
-            <a className="link-gold" href={TIKTOK} target="_blank" rel="noreferrer">
-              Watch on TikTok <ArrowUpRight size={14} />
-            </a>
-          </div>
-        </aside>
-
-        <Gallery />
+        </section>
       </main>
 
-      <footer className="bar chrome">
-        <div className="bar-phones"><Phones copy={copy} copied={copied} /></div>
-        <div className="bar-marquee" aria-hidden="true">
-          <div className="bar-track">
-            {[0, 1].map((k) => (
-              <span key={k}>Purple Drip <Drop /> Crème Vanille Elixir <Drop /> Photography Marta <Drop /> Lila &amp; Hashim <Drop /> Where every drop is a utopia <Drop /></span>
-            ))}
-          </div>
+      <footer className="foot">
+        <dl className="credits">
+          {CREDITS.map((c) => (
+            <div className="rv" key={c.role}><dt>{c.role}</dt><dd>{c.name}</dd></div>
+          ))}
+        </dl>
+        <div className="foot-row">
+          <a href={SITE} target="_blank" rel="noreferrer">www.oudtopia.co.uk</a>
+          <a href={TIKTOK} target="_blank" rel="noreferrer">TikTok @oudtopia</a>
+          <span>© 2026 OudTopia</span>
         </div>
-        <a className="bar-link" href={TIKTOK} target="_blank" rel="noreferrer">TikTok @oudtopia</a>
-        <a className="bar-link" href={SITE} target="_blank" rel="noreferrer">www.oudtopia.co.uk</a>
       </footer>
 
-      <Booking open={booking} onClose={() => setBooking(false)} copy={copy} copied={copied} />
       <p className={`toast ${copied ? 'is-on' : ''}`} role="status">{copied ? `Copied ${copied}` : ''}</p>
     </div>
   )
