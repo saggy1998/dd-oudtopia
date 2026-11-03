@@ -1,44 +1,18 @@
-import { useLayoutEffect, useRef, useState, type MouseEvent } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { ScrambleTextPlugin } from 'gsap/ScrambleTextPlugin'
 import { SplitText } from 'gsap/SplitText'
-import { CREDITS, SITE, TIKTOK } from './data'
+import { SITE } from './data'
 import GoldDust from './GoldDust'
-import { Drop, MOTION, Phones } from './panels'
+import { Drop, MOTION } from './panels'
 import { Scent, Story } from './pages'
 import './campaign.css'
 
-gsap.registerPlugin(ScrollTrigger, ScrambleTextPlugin, SplitText)
-
-// Glide to a part of the page; nothing opens, nothing jumps.
-const scrollTo = (id: string) => document.getElementById(id)!.scrollIntoView({ behavior: 'smooth' })
-
-// Words rise out of masks and .rv items fade up as they scroll into view.
-function reveal(scope: string) {
-  gsap.utils.toArray<HTMLElement>(`${scope} .split`).forEach((el) => {
-    const { words } = SplitText.create(el, { type: 'words', mask: 'words' })
-    gsap.from(words, { yPercent: 110, stagger: 0.05, duration: 1.1, ease: 'expo.out', scrollTrigger: { trigger: el, start: 'top 88%' } })
-  })
-  ScrollTrigger.batch(`${scope} .rv`, {
-    start: 'top 92%',
-    once: true,
-    onEnter: (els) => gsap.fromTo(els, { y: 28, opacity: 0 }, { y: 0, opacity: 1, stagger: 0.07, duration: 1, ease: 'expo.out', overwrite: true }),
-  })
-  gsap.set(`${scope} .rv`, { opacity: 0 })
-  // The opening photograph of each half has its own entrance and never drifts.
-  gsap.utils.toArray<HTMLElement>(`${scope} .pg-body .ph img`).forEach((img) => {
-    gsap.from(img, { clipPath: 'inset(100% 0% 0% 0%)', scale: 1.12, duration: 1.6, ease: 'expo.inOut', clearProps: 'clipPath,scale', scrollTrigger: { trigger: img, start: 'top 85%' } })
-  })
-  // Gentle parallax drift on the photographs themselves (whole figure moves, nothing is cropped).
-  gsap.utils.toArray<HTMLElement>(`${scope} .pg-body .ph`).forEach((ph) => {
-    gsap.fromTo(ph, { y: 40 }, { y: -40, ease: 'none', scrollTrigger: { trigger: ph, start: 'top bottom', end: 'bottom top', scrub: true } })
-  })
-}
+gsap.registerPlugin(ScrambleTextPlugin, SplitText)
 
 export default function Campaign() {
   const root = useRef<HTMLDivElement>(null)
-  const [here, setHere] = useState<'story' | 'scent'>('story')
+  const [pane, setPane] = useState(0) // phones only: which of the two screens is showing
   const [copied, setCopied] = useState<string | null>(null)
 
   const copy = async (text: string) => {
@@ -51,10 +25,12 @@ export default function Campaign() {
     }
   }
 
-  const book = () => scrollTo('book')
-  const tab = (id: string) => (e: MouseEvent) => { e.preventDefault(); scrollTo(id) }
+  // Book now reveals the numbers in place: on a phone it glides to the second screen, then they glow gold.
+  const book = () => {
+    document.getElementById('contact')!.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' })
+    gsap.fromTo('.contact .phone a', { color: '#c9a24e' }, { color: '#0a0a0a', duration: 1.8, delay: 0.3, ease: 'power2.in', clearProps: 'color' })
+  }
 
-  // Setup: intro, cursor, magnetic buttons, book band.
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
       SplitText.create('.ptitle', { type: 'words', mask: 'words', wordsClass: 'w' })
@@ -69,21 +45,15 @@ export default function Campaign() {
           .set('.loader', { display: 'none' })
           .from('.hero-ph img', { clipPath: 'inset(100% 0% 0% 0%)', scale: 1.15, duration: 1.5, ease: 'expo.inOut', clearProps: 'clipPath,scale' }, '-=0.5')
           .from('.ptitle .w', { yPercent: 110, stagger: 0.07, duration: 1.1 }, '<0.4')
-          .from('.hero .pi', { y: 24, opacity: 0, stagger: 0.08, duration: 0.9, clearProps: 'transform' }, '<0.2')
-          .from('.nav', { opacity: 0, y: -16, duration: 0.9, clearProps: 'all' }, '<')
+          .from('.pi', { y: 24, opacity: 0, stagger: 0.08, duration: 0.9, clearProps: 'transform,opacity' }, '<0.2')
+          .from('.nav', { opacity: 0, y: -16, duration: 0.9, clearProps: 'transform,opacity' }, '<')
         gsap.utils.toArray<HTMLElement>('.scramble').forEach((s) => {
           // Keep the text on the element: a re-run (StrictMode) would otherwise read the already-blanked node.
           const text = (s.dataset.text ??= s.textContent ?? '')
           s.textContent = ''
           gsap.to(s, { delay: 2.4, duration: 1.2, scrambleText: { text, chars: 'OUDTOPIA', speed: 0.5 } })
         })
-        reveal('.page')
-        reveal('.book')
-        reveal('.foot')
       })
-
-      // The tab for whichever half is on screen reads as current.
-      ScrollTrigger.create({ trigger: '.scent', start: 'top 60%', onToggle: (self) => setHere(self.isActive ? 'scent' : 'story') })
 
       mm.add(`${MOTION} and (pointer: fine)`, () => {
         const cursor = document.querySelector<HTMLElement>('.cursor')!
@@ -137,40 +107,17 @@ export default function Campaign() {
           <Drop className="brand-drop" />
           <span>OudTopia</span>
         </a>
-        <nav className="tabs" aria-label="Sections">
-          <a className="tab" href="#story" aria-current={here === 'story' ? 'true' : undefined} onClick={tab('story')}>His &amp; Hers Story<sup>01</sup></a>
-          <a className="tab" href="#scent" aria-current={here === 'scent' ? 'true' : undefined} onClick={tab('scent')}>The Scent<sup>02</sup></a>
-        </nav>
+        <p className="pager" aria-hidden="true">
+          <span className={pane === 0 ? 'on' : ''}>01</span> / <span className={pane === 1 ? 'on' : ''}>02</span>
+        </p>
         <button className="btn" data-magnetic onClick={book}>Book now</button>
       </header>
 
-      <main>
-        <Story onBook={book} />
-        <Scent />
-
-        <section className="book" id="book">
-          <Drop className="book-drop rv" />
-          <p className="eyebrow rv">Book now</p>
-          <h2 className="book-title split">Call or text <em>to book the pair.</em></h2>
-          <div className="book-phones rv"><Phones copy={copy} copied={copied} /></div>
-          <div className="ctas rv">
-            <a className="link-gold" href={TIKTOK} target="_blank" rel="noreferrer">Message us on TikTok</a>
-          </div>
-        </section>
+      {/* Desktop: one editorial page. Phones: two full screens side by side, swiped. */}
+      <main className="spread" onScroll={(e) => setPane(Math.round(e.currentTarget.scrollLeft / e.currentTarget.clientWidth))}>
+        <Story />
+        <Scent copy={copy} copied={copied} />
       </main>
-
-      <footer className="foot">
-        <dl className="credits">
-          {CREDITS.map((c) => (
-            <div className="rv" key={c.role}><dt>{c.role}</dt><dd>{c.name}</dd></div>
-          ))}
-        </dl>
-        <div className="foot-row">
-          <a href={SITE} target="_blank" rel="noreferrer">www.oudtopia.co.uk</a>
-          <a href={TIKTOK} target="_blank" rel="noreferrer">TikTok @oudtopia</a>
-          <span>© 2026 OudTopia</span>
-        </div>
-      </footer>
 
       <p className={`toast ${copied ? 'is-on' : ''}`} role="status">{copied ? `Copied ${copied}` : ''}</p>
     </div>
