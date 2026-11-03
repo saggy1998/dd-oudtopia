@@ -37,7 +37,7 @@ export function Story() {
         <p className="hero-sub pi">
           Lila wears Purple Drip, Hashim wears Crème Vanille Elixir. Two OudTopia fragrances, made to be worn side by side.
         </p>
-        <p className="whisper swipe-hint pi" aria-hidden="true">Swipe for the scent</p>
+        <p className="whisper swipe-hint pi" aria-hidden="true">Scroll for the scent</p>
       </div>
     </section>
   )

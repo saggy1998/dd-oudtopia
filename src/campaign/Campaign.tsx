@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { ScrambleTextPlugin } from 'gsap/ScrambleTextPlugin'
 import { SplitText } from 'gsap/SplitText'
@@ -25,7 +25,14 @@ export default function Campaign() {
     }
   }
 
-  // Book now reveals the numbers in place: on a phone it glides to the second screen, then they glow gold.
+  // Phones: the pager follows whichever screen fills most of the view.
+  useEffect(() => {
+    const onScroll = () => setPane(document.getElementById('scent')!.getBoundingClientRect().top < innerHeight / 2 ? 1 : 0)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  // Book now reveals the numbers in place: on a phone it glides down to the second screen, then they glow gold.
   const book = () => {
     document.getElementById('contact')!.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' })
     gsap.fromTo('.contact .phone a', { color: '#c9a24e' }, { color: '#0a0a0a', duration: 1.8, delay: 0.3, ease: 'power2.in', clearProps: 'color' })
@@ -113,8 +120,8 @@ export default function Campaign() {
         <button className="btn" data-magnetic onClick={book}>Book now</button>
       </header>
 
-      {/* Desktop: one editorial page. Phones: two full screens side by side, swiped. */}
-      <main className="spread" onScroll={(e) => setPane(Math.round(e.currentTarget.scrollLeft / e.currentTarget.clientWidth))}>
+      {/* Desktop: one editorial page. Phones: two full screens, one below the other. */}
+      <main className="spread">
         <Story />
         <Scent copy={copy} copied={copied} />
       </main>
