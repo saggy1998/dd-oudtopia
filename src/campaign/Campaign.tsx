@@ -2,10 +2,11 @@ import { useLayoutEffect, useRef, useState, type CSSProperties } from 'react'
 import gsap from 'gsap'
 import { ScrambleTextPlugin } from 'gsap/ScrambleTextPlugin'
 import { SplitText } from 'gsap/SplitText'
-import { CREDITS, PERFUMES, SITE, TIKTOK } from './data'
+import { CREDITS, PERFUMES, SITE } from './data'
 import GoldDust, { spray } from './GoldDust'
-import { Drop, MOTION, Phones } from './panels'
+import { Drop, MOTION } from './panels'
 import Sheet from './Sheet'
+import Shop from './Shop'
 import './campaign.css'
 
 gsap.registerPlugin(ScrambleTextPlugin, SplitText)
@@ -13,6 +14,7 @@ gsap.registerPlugin(ScrambleTextPlugin, SplitText)
 export default function Campaign() {
   const root = useRef<HTMLDivElement>(null)
   const [open, setOpen] = useState<string | null>(null)
+  const [shop, setShop] = useState(false)
   const [copied, setCopied] = useState<string | null>(null)
 
   const copy = async (text: string) => {
@@ -23,12 +25,6 @@ export default function Campaign() {
     } catch {
       // Clipboard blocked (e.g. insecure context) — the tel: link still works.
     }
-  }
-
-  // Book now: glide to the numbers (they sit beside the photos on desktop, below them on phones), then they glow gold.
-  const book = () => {
-    document.getElementById('contact')!.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
-    gsap.fromTo('.contact .phone a', { color: '#c9a24e' }, { color: '#0a0a0a', duration: 1.8, delay: 0.3, ease: 'power2.in', clearProps: 'color' })
   }
 
   useLayoutEffect(() => {
@@ -112,15 +108,15 @@ export default function Campaign() {
           <span>OudTopia</span>
         </a>
         <p className="nav-mid scramble">The His &amp; Hers Edit</p>
-        <button className="btn" data-magnetic onClick={book}>Book now</button>
+        <button className="btn" data-magnetic aria-haspopup="dialog" onClick={() => setShop(true)}>Buy now</button>
       </header>
 
       <main className="page">
         <div className="intro">
           <p className="eyebrow pi">OudTopia · Lila &amp; Hashim</p>
-          <h1 className="ptitle">Two drops. <br />One <em>utopia.</em></h1>
+          <h1 className="ptitle">Two souls. <br />Two scents. <br />One <em>addiction.</em></h1>
           <p className="intro-sub pi">
-            Lila wears Purple Drip, Hashim wears Crème Vanille Elixir. Two OudTopia fragrances, made to be worn side by side.
+            She’s sweet Bloom. He’s Royal Oud. Spray it before your nikkah, your walima — and watch how close you end up. Buy it together. And smell like each other.
           </p>
           <p className="whisper pi">Tap a photograph to meet the scent</p>
         </div>
@@ -156,26 +152,18 @@ export default function Campaign() {
           ))}
         </div>
 
-        <div className="contact pi" id="contact">
-          <p className="eyebrow">Call or text to book</p>
-          <Phones copy={copy} copied={copied} />
-          <a className="link-gold" href={TIKTOK} target="_blank" rel="noreferrer">TikTok @oudtopia</a>
-        </div>
-
         <footer className="foot pi">
           <dl className="credits">
             {CREDITS.map((c) => (
               <div key={c.role}><dt>{c.role}</dt><dd>{c.name}</dd></div>
             ))}
           </dl>
-          <p className="foot-row">
-            <a href={SITE} target="_blank" rel="noreferrer">www.oudtopia.co.uk</a>
-            <span>© 2026 OudTopia</span>
-          </p>
+          <p className="foot-row"><span>© 2026 OudTopia</span></p>
         </footer>
       </main>
 
-      <Sheet perfume={PERFUMES.find((p) => p.id === open) ?? null} onClosed={() => setOpen(null)} copy={copy} copied={copied} />
+      <Sheet perfume={PERFUMES.find((p) => p.id === open) ?? null} onClosed={() => setOpen(null)} onBuy={() => setShop(true)} />
+      <Shop open={shop} onClosed={() => setShop(false)} copy={copy} copied={copied} />
       <p className={`toast ${copied ? 'is-on' : ''}`} role="status">{copied ? `Copied ${copied}` : ''}</p>
     </div>
   )

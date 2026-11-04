@@ -2,17 +2,16 @@ import { useLayoutEffect, useRef, type CSSProperties } from 'react'
 import gsap from 'gsap'
 import { SplitText } from 'gsap/SplitText'
 import { X } from 'lucide-react'
-import { PERFUMES, TIKTOK } from './data'
-import { MOTION, Phones } from './panels'
+import { PERFUMES } from './data'
+import { MOTION } from './panels'
 
 type Perfume = (typeof PERFUMES)[number]
 
 /* The perfume pop-up: a full-bleed page that opens out of the photo that was tapped. */
-export default function Sheet({ perfume, onClosed, copy, copied }: {
+export default function Sheet({ perfume, onClosed, onBuy }: {
   perfume: Perfume | null
   onClosed: () => void
-  copy: (text: string) => void
-  copied: string | null
+  onBuy: () => void
 }) {
   const dialog = useRef<HTMLDialogElement>(null)
   const tl = useRef<gsap.core.Timeline | null>(null)
@@ -25,10 +24,10 @@ export default function Sheet({ perfume, onClosed, copy, copied }: {
       tl.current = null
       if (!matchMedia(MOTION).matches) return
       // It opens from the side the photo sits on: left/right on desktop, top/bottom on phones.
-      const his = perfume.id === 'his'
+      const second = PERFUMES.indexOf(perfume) === 1
       const from = matchMedia('(max-width: 899px)').matches
-        ? (his ? 'inset(100% 0% 0% 0%)' : 'inset(0% 0% 100% 0%)')
-        : (his ? 'inset(0% 0% 0% 100%)' : 'inset(0% 100% 0% 0%)')
+        ? (second ? 'inset(100% 0% 0% 0%)' : 'inset(0% 0% 100% 0%)')
+        : (second ? 'inset(0% 0% 0% 100%)' : 'inset(0% 100% 0% 0%)')
       const name = SplitText.create('.sheet-name', { type: 'words', mask: 'words', wordsClass: 'w' })
       tl.current = gsap.timeline({ defaults: { ease: 'expo.out' } })
         .fromTo('.sheet-panel', { clipPath: from }, { clipPath: 'inset(0% 0% 0% 0%)', duration: 1, ease: 'expo.inOut' })
@@ -51,7 +50,7 @@ export default function Sheet({ perfume, onClosed, copy, copied }: {
   const p = perfume
   return (
     <dialog
-      className={`sheet ${p?.id === 'his' ? 'is-his' : ''}`}
+      className={`sheet ${p && PERFUMES.indexOf(p) === 1 ? 'is-right' : ''}`}
       ref={dialog}
       aria-labelledby="sheet-name"
       onCancel={(e) => { e.preventDefault(); close() }} // Esc plays the closing animation too
@@ -74,13 +73,8 @@ export default function Sheet({ perfume, onClosed, copy, copied }: {
               {p.notes.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}
             </dl>
             <p className="bottle-spec rv">{p.spec}</p>
-            <div className="sheet-book rv">
-              <p className="eyebrow">Call or text to book</p>
-              <Phones copy={copy} copied={copied} />
-            </div>
             <p className="sheet-links rv">
-              <a className="link-gold" href={p.url} target="_blank" rel="noreferrer">Shop the scent</a>
-              <a className="link-gold" href={TIKTOK} target="_blank" rel="noreferrer">TikTok @oudtopia</a>
+              <button className="btn" onClick={onBuy}>Buy now</button>
             </p>
           </div>
         </div>

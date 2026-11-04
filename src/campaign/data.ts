@@ -1,6 +1,8 @@
 // Copy and notes match oudtopia.co.uk product pages (checked 2 Nov 2026).
 export const SITE = 'https://www.oudtopia.co.uk'
 export const TIKTOK = 'https://www.tiktok.com/@oudtopia'
+export const INSTAGRAM = 'https://www.instagram.com/oudtopia1/'
+export const SHOP = `${SITE}/collections/perfumes`
 export const PHONES = [
   { label: '07482 228428', href: 'tel:+447482228428' },
   { label: '+44 7400 666885', href: 'tel:+447400666885' },
@@ -8,17 +10,17 @@ export const PHONES = [
 
 // pos: where a cropped photo keeps its focus
 
-// Hers / His follows the photographs: Purple Drip in front of Lila, the couple holding Crème Vanille together.
+// Purple Drip is his (Hashim), Crème Vanille is hers (Lila). Array order = photo order: left/top first.
 // portrait: the model photo on the page. shots: [main bottle photo, still life] for the pop-up.
 export const PERFUMES = [
   {
-    id: 'hers', who: 'Hers', model: 'Lila',
+    id: 'purple', who: 'His', model: 'Hashim',
     name: 'Purple Drip', spec: 'Extrait de Parfum · 50ml', liquid: '#b5179e',
     url: `${SITE}/products/purple-drip-perfume`,
     portrait: { src: '/campaign/couple-studio.webp', w: 1080, h: 1350, pos: '50% 40%', alt: 'Lila and Hashim in silver and ivory wedding wear, with Purple Drip in front of Lila' },
     line: 'Playful, fresh and unforgettable.',
     about: 'A vibrant floral fruity fragrance bursting with sweetness, elegance and confidence.',
-    story: 'She opens bright: juicy strawberry, rich blackcurrant, crisp red apple and citrus. Then the bouquet softens into sweet pea, freesia, jasmine and velvety rose, leaving a sweet trail that turns heads.',
+    story: 'He opens bright: juicy strawberry, rich blackcurrant, crisp red apple and citrus. Then the bouquet softens into sweet pea, freesia, jasmine and velvety rose, leaving a sweet trail that turns heads.',
     notes: [
       ['Top', 'Strawberry, blackcurrant, red apple, citrus'],
       ['Heart', 'Sweet pea, freesia, jasmine, rose'],
@@ -30,13 +32,13 @@ export const PERFUMES = [
     ],
   },
   {
-    id: 'his', who: 'His', model: 'Hashim',
+    id: 'vanilla', who: 'Hers', model: 'Lila',
     name: 'Crème Vanille Elixir', spec: 'Elixir · 50ml', liquid: '#e2b13c',
     url: `${SITE}/products/vanilla-elixir`,
     portrait: { src: '/campaign/couple-vanilla.webp', w: 1024, h: 1536, pos: '50% 30%', alt: 'Lila and Hashim in silver and ivory wedding wear, holding a bottle of Crème Vanille Elixir together' },
     line: 'Warm. Creamy. Indulgent.',
     about: 'A rich crème vanilla fragrance built around warmth, softness and pure indulgence.',
-    story: 'He settles warm: a light, fresh sweetness first, then a velvety vanilla of whipped cream, soft custard and caramel, grounded by sandalwood, amber and soft musk that linger on the skin.',
+    story: 'She settles warm: a light, fresh sweetness first, then a velvety vanilla of whipped cream, soft custard and caramel, grounded by sandalwood, amber and soft musk that linger on the skin.',
     notes: [
       ['Opening', 'A light, slightly fresh sweetness'],
       ['Heart', 'Whipped cream, soft custard, caramel'],
