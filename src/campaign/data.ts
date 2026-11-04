@@ -10,7 +10,7 @@ export const PHONES = [
 
 // pos: where a cropped photo keeps its focus
 
-// Purple Drip is his (Hashim), Crème Vanille is hers (Lila). Array order = photo order: left/top first.
+// Purple Drip is his (Hashim), Crème Vanilla is hers (Lila). Array order = photo order: left/top first.
 // portrait: the model photo on the page. shots: [main bottle photo, still life] for the pop-up.
 export const PERFUMES = [
   {
@@ -33,9 +33,9 @@ export const PERFUMES = [
   },
   {
     id: 'vanilla', who: 'Hers', model: 'Lila',
-    name: 'Crème Vanille Elixir', spec: 'Elixir · 50ml', liquid: '#e2b13c',
+    name: 'Crème Vanilla Elixir', spec: 'Elixir · 50ml', liquid: '#e2b13c',
     url: `${SITE}/products/vanilla-elixir`,
-    portrait: { src: '/campaign/couple-vanilla.webp', w: 1024, h: 1536, pos: '50% 30%', alt: 'Lila and Hashim in silver and ivory wedding wear, holding a bottle of Crème Vanille Elixir together' },
+    portrait: { src: '/campaign/couple-vanilla.webp', w: 1024, h: 1536, pos: '50% 30%', alt: 'Lila and Hashim in silver and ivory wedding wear, holding a bottle of Crème Vanilla Elixir together' },
     line: 'Warm. Creamy. Indulgent.',
     about: 'A rich crème vanilla fragrance built around warmth, softness and pure indulgence.',
     story: 'She settles warm: a light, fresh sweetness first, then a velvety vanilla of whipped cream, soft custard and caramel, grounded by sandalwood, amber and soft musk that linger on the skin.',
@@ -45,8 +45,8 @@ export const PERFUMES = [
       ['Base', 'Sandalwood, amber, soft musk'],
     ],
     shots: [
-      { src: '/campaign/vanilla-silk.webp', w: 1024, h: 1536, alt: 'Crème Vanille Elixir bottle resting in folds of ivory silk' },
-      { src: '/campaign/vanilla-oud.webp', w: 1024, h: 1536, alt: 'Crème Vanille Elixir bottle on cream satin with vanilla pods and oud wood' },
+      { src: '/campaign/vanilla-silk.webp', w: 1024, h: 1536, alt: 'Crème Vanilla Elixir bottle resting in folds of ivory silk' },
+      { src: '/campaign/vanilla-oud.webp', w: 1024, h: 1536, alt: 'Crème Vanilla Elixir bottle on cream satin with vanilla pods and oud wood' },
     ],
   },
 ]
