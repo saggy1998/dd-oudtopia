@@ -1,8 +1,9 @@
-// Copy and notes match oudtopia.co.uk product pages (checked 2 Nov 2026).
+// Copy and notes match oudtopia.co.uk product pages (checked 4 Nov 2026).
 export const SITE = 'https://www.oudtopia.co.uk'
 export const TIKTOK = 'https://www.tiktok.com/@oudtopia'
 export const INSTAGRAM = 'https://www.instagram.com/oudtopia1/'
-export const SHOP = `${SITE}/collections/perfumes`
+// The Dulhan Diaries duo page isn't live yet. Paste its URL here and the "Shop the duo" button becomes a link.
+export const DUO_SHOP = ''
 export const PHONES = [
   { label: '07482 228428', href: 'tel:+447482228428' },
   { label: '+44 7400 666885', href: 'tel:+447400666885' },
@@ -10,7 +11,7 @@ export const PHONES = [
 
 // pos: where a cropped photo keeps its focus
 
-// Purple Drip is his (Hashim), Crème Vanilla is hers (Lila). Array order = photo order: left/top first.
+// Purple Drip is his (Hashim), Arabian Tonka is hers (Lila). accords: the client's scent accords. Array order = photo order: left/top first.
 // portrait: the model photo on the page. shots: [main bottle photo, still life] for the pop-up.
 export const PERFUMES = [
   {
@@ -26,27 +27,29 @@ export const PERFUMES = [
       ['Heart', 'Sweet pea, freesia, jasmine, rose'],
       ['Base', 'Raspberry, musk, sandalwood, amber'],
     ],
+    accords: ['Fruity', 'Sweet', 'Floral', 'White floral', 'Musky', 'Woody', 'Amber', 'Fresh', 'Powdery'],
     shots: [
       { src: '/campaign/purple-spray.webp', w: 1024, h: 1536, alt: 'Purple Drip bottle misting a spray of scent, on dark glass with rose petals' },
       { src: '/campaign/purple-berries.webp', w: 1086, h: 1448, alt: 'Purple Drip bottle with strawberries, blackcurrants, apple and orange on blush satin' },
     ],
   },
   {
-    id: 'vanilla', who: 'Hers', model: 'Lila',
-    name: 'Crème Vanilla Elixir', spec: 'Elixir · 50ml', liquid: '#e2b13c',
-    url: `${SITE}/products/vanilla-elixir`,
-    portrait: { src: '/campaign/couple-vanilla.webp', w: 1024, h: 1536, pos: '50% 30%', alt: 'Lila and Hashim in silver and ivory wedding wear, holding a bottle of Crème Vanilla Elixir together' },
-    line: 'Warm. Creamy. Indulgent.',
-    about: 'A rich crème vanilla fragrance built around warmth, softness and pure indulgence.',
-    story: 'She settles warm: a light, fresh sweetness first, then a velvety vanilla of whipped cream, soft custard and caramel, grounded by sandalwood, amber and soft musk that linger on the skin.',
+    id: 'tonka', who: 'Hers', model: 'Lila',
+    name: 'Arabian Tonka', spec: 'Extrait de Parfum · 50ml', liquid: '#e2b13c',
+    url: `${SITE}/products/arabians-tonka-perfume`,
+    portrait: { src: '/campaign/couple-vanilla.webp', w: 1024, h: 1536, pos: '50% 30%', alt: 'Lila and Hashim in silver and ivory wedding wear, holding a bottle of Arabian Tonka together' },
+    line: 'Bold. Sensual. Captivating.',
+    about: 'A rich, indulgent fragrance blending warm tonka bean and smooth vanilla with deep amber and subtle oud.',
+    story: 'She leaves a trail of oriental sweetness and dark resins: warm and addictive, powerful yet refined, settling into the skin from day to night.',
+    // The site gives no top/heart/base for this one; these come from its product description.
     notes: [
-      ['Opening', 'A light, slightly fresh sweetness'],
-      ['Heart', 'Whipped cream, soft custard, caramel'],
-      ['Base', 'Sandalwood, amber, soft musk'],
+      ['Heart', 'Warm tonka bean, smooth vanilla'],
+      ['Base', 'Deep amber, subtle oud, dark resins'],
     ],
+    accords: ['Sweet', 'Vanilla', 'Amber', 'Warm spicy', 'Oud', 'Rose', 'Musky', 'Aromatic', 'Metallic', 'Powdery'],
     shots: [
-      { src: '/campaign/vanilla-silk.webp', w: 1024, h: 1536, alt: 'Crème Vanilla Elixir bottle resting in folds of ivory silk' },
-      { src: '/campaign/vanilla-oud.webp', w: 1024, h: 1536, alt: 'Crème Vanilla Elixir bottle on cream satin with vanilla pods and oud wood' },
+      { src: '/campaign/vanilla-silk.webp', w: 1024, h: 1536, alt: 'Arabian Tonka bottle resting in folds of ivory silk' },
+      { src: '/campaign/vanilla-oud.webp', w: 1024, h: 1536, alt: 'Arabian Tonka bottle on cream satin with vanilla pods and oud wood' },
     ],
   },
 ]

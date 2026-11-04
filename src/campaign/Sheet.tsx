@@ -72,6 +72,10 @@ export default function Sheet({ perfume, onClosed, onBuy }: {
             <dl className="notes rv">
               {p.notes.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}
             </dl>
+            <div className="accords rv">
+              <p className="accords-label">Scent accords</p>
+              <ul>{p.accords.map((a) => <li key={a}>{a}</li>)}</ul>
+            </div>
             <p className="bottle-spec rv">{p.spec}</p>
             <p className="sheet-links rv">
               <button className="btn" onClick={onBuy}>Buy now</button>

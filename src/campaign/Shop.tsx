@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef, type CSSProperties } from 'react'
 import gsap from 'gsap'
 import { X } from 'lucide-react'
-import { INSTAGRAM, PERFUMES, SHOP, SITE, TIKTOK } from './data'
+import { DUO_SHOP, INSTAGRAM, PERFUMES, SITE, TIKTOK } from './data'
 import { MOTION, Phones } from './panels'
 
 /* Buy now: the shop and every contact detail live here and nowhere else on the page. */
@@ -49,18 +49,24 @@ export default function Shop({ open, onClosed, copy, copied }: {
           <button className="sheet-close" onClick={close} autoFocus>Close <X size={14} /></button>
           <p className="eyebrow rv">Buy now</p>
           <h2 className="shop-title rv" id="shop-title">Buy it <em>together.</em></h2>
-          <ul className="shop-list">
+          <p className="shop-pair rv">
             {PERFUMES.map((p) => (
-              <li className="rv" key={p.id} style={{ '--liquid': p.liquid } as CSSProperties}>
-                <span className="who">{p.who} · {p.model}</span>
-                <a className="shop-item" href={p.url} target="_blank" rel="noreferrer">
-                  <span className="shop-name">{p.name}</span>
-                  <span className="shop-spec">{p.spec}</span>
-                </a>
-              </li>
+              <span className="who" key={p.id} style={{ '--liquid': p.liquid } as CSSProperties}>{p.who} · {p.name}</span>
             ))}
-          </ul>
-          <a className="link-gold rv" href={SHOP} target="_blank" rel="noreferrer">Shop all perfumes</a>
+          </p>
+
+          <div className="shop-ctas">
+            <div className="rv">
+              <a className="cta cta-main" href={DUO_SHOP || undefined} target="_blank" rel="noreferrer">
+                Shop the duo — £99 <span className="cta-sep" aria-hidden="true" /> Free gift wrap
+              </a>
+              <p className="cta-sub">Ships from Dulhan Diaries, gift box included</p>
+            </div>
+            <div className="rv">
+              <a className="cta cta-alt" href={SITE} target="_blank" rel="noreferrer">Order from OudTopia Official</a>
+              <p className="cta-sub">Direct from brand</p>
+            </div>
+          </div>
 
           <div className="shop-contact rv">
             <p className="eyebrow">Call or text to order</p>
@@ -69,7 +75,6 @@ export default function Shop({ open, onClosed, copy, copied }: {
           <p className="shop-links rv">
             <a className="link-gold" href={INSTAGRAM} target="_blank" rel="noreferrer">Instagram @oudtopia1</a>
             <a className="link-gold" href={TIKTOK} target="_blank" rel="noreferrer">TikTok @oudtopia</a>
-            <a className="link-gold" href={SITE} target="_blank" rel="noreferrer">www.oudtopia.co.uk</a>
           </p>
         </div>
       )}
