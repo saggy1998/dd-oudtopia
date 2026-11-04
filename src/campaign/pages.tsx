@@ -1,4 +1,4 @@
-import { useState, type CSSProperties } from 'react'
+import { useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent as ReactPointerEvent } from 'react'
 import { COUPLE_STUDIO, CREDITS, HOTSPOTS, PERFUMES, SITE, TIKTOK } from './data'
 import { Phones, sprayFrom } from './panels'
 
@@ -43,30 +43,72 @@ export function Story() {
   )
 }
 
-/* 02. The scent — the one move: this or that */
+/* 02. The scent — the one move: this or that. Tap a bottle, or drag the line between them. */
+type Pick = string | null
+const ORDER: Pick[] = ['his', null, 'hers'] // the line, left to right: further right shows more of hers (left side)
+
 export function Scent({ copy, copied }: { copy: (text: string) => void; copied: string | null }) {
-  const [pick, setPick] = useState<string | null>(null)
+  const [pick, setPick] = useState<Pick>(null)
+  const tot = useRef<HTMLDivElement>(null)
+
+  const choose = (next: Pick, from: Element) => {
+    setPick(next)
+    if (next) sprayFrom(from, PERFUMES.find((p) => p.id === next)!.liquid)
+  }
+
+  // Drag the line: the two photos share the width live, and letting go past a third picks that side.
+  const drag = (e: ReactPointerEvent<HTMLDivElement>) => {
+    const el = tot.current!
+    const handle = e.currentTarget
+    const r = el.getBoundingClientRect()
+    let s = 0.5
+    let moved = false
+    e.preventDefault() // no text selection or native drag, which would cancel the pointer
+    handle.setPointerCapture(e.pointerId)
+    const move = (ev: PointerEvent) => {
+      if (!moved) el.classList.add('is-dragging')
+      moved = true
+      s = Math.min(0.92, Math.max(0.08, (ev.clientX - r.left) / r.width))
+      el.style.setProperty('--split', String(s))
+    }
+    const up = (ev: PointerEvent) => {
+      handle.removeEventListener('pointermove', move)
+      handle.removeEventListener('pointerup', up)
+      handle.removeEventListener('pointercancel', up)
+      el.classList.remove('is-dragging')
+      el.style.removeProperty('--split') // the class value takes over and the line glides there
+      if (moved && ev.type === 'pointerup') choose(s > 0.66 ? 'hers' : s < 0.34 ? 'his' : null, handle)
+    }
+    handle.addEventListener('pointermove', move)
+    handle.addEventListener('pointerup', up)
+    handle.addEventListener('pointercancel', up)
+  }
+
+  const key = (e: KeyboardEvent<HTMLDivElement>) => {
+    const step = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0
+    const i = ORDER.indexOf(pick) + step
+    if (!step || i < 0 || i >= ORDER.length) return
+    e.preventDefault()
+    choose(ORDER[i], e.currentTarget)
+  }
 
   return (
     <section className="pane pane-scent" id="scent" aria-label="The scent">
-      <div className={`tot pi ${pick ? 'is-picked' : ''}`} role="group" aria-label="Choose his or hers">
+      <div className={`tot pi ${pick ? `is-picked pick-${pick}` : ''}`} ref={tot} role="group" aria-label="Choose his or hers">
         {PERFUMES.map((p, i) => (
           <div className={`tot-side ${pick === p.id ? 'is-on' : ''} ${p.shots[0].dark ? 'is-dark' : ''}`} key={p.id} style={liquid(p.liquid)}>
             <button
               className="tot-hit"
               aria-label={`${p.who}: ${p.name}`}
               aria-expanded={pick === p.id}
-              onClick={(e) => {
-                const next = pick === p.id ? null : p.id
-                setPick(next)
-                if (next) sprayFrom(e.currentTarget, p.liquid)
-              }}
+              onClick={(e) => choose(pick === p.id ? null : p.id, e.currentTarget)}
             >
               <img src={p.shots[0].src} alt={p.shots[0].alt} width={p.shots[0].w} height={p.shots[0].h} style={{ objectPosition: p.shots[0].pos }} />
             </button>
             <div className="tot-text">
               <p className="tot-num">0{i + 1}</p>
               <p className="who">{p.who}</p>
+              <div className="tot-lead"><p>{p.line}</p></div>
               <h2 className="tot-name">{p.name}</h2>
               <div className="tot-detail" inert={pick !== p.id}>
                 <div>
@@ -82,7 +124,19 @@ export function Scent({ copy, copied }: { copy: (text: string) => void; copied: 
             </div>
           </div>
         ))}
-        <p className="whisper tot-whisper">{pick ? 'Tap again to compare' : 'His or hers · tap to choose'}</p>
+        <div
+          className="tot-line"
+          role="slider"
+          tabIndex={0}
+          aria-label="Slide between hers and his"
+          aria-valuemin={0}
+          aria-valuemax={2}
+          aria-valuenow={ORDER.indexOf(pick)}
+          aria-valuetext={pick ? PERFUMES.find((p) => p.id === pick)!.name : 'Both'}
+          onPointerDown={drag}
+          onKeyDown={key}
+        ><span /></div>
+        <p className="whisper tot-whisper">{pick ? 'Tap again to compare' : 'Drag the line or tap · his or hers'}</p>
       </div>
 
       <div className="contact pi" id="contact">

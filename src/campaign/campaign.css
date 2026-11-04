@@ -162,14 +162,26 @@ em { font-style: italic; color: var(--gold-deep); }
 .hero-reveal span { display: block; margin-bottom: 0.4rem; font-family: var(--sans); font-size: 0.56rem; font-weight: 500; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); }
 @keyframes reveal-in { from { opacity: 0; transform: translateY(10px); } }
 
-/* ---------- This or that: the chosen bottle widens, its photo slides aside, the notes fade in on white ---------- */
-.tot { grid-area: tot; position: relative; display: flex; min-height: 0; }
-.tot-side { position: relative; flex: 1 1 0; min-width: 0; overflow: hidden; transition: flex-grow 1.1s var(--ease); }
-.tot.is-picked .tot-side { flex-grow: 0.3; }
-.tot.is-picked .tot-side.is-on { flex-grow: 2.2; }
+/* ---------- This or that: one frame split by a thin line. Drag it or tap a side; the chosen
+   bottle widens, its photo slides aside and the notes fade in on white ---------- */
+.tot { --split: 0.5; --pick: 0.88; grid-area: tot; position: relative; display: flex; min-height: 0; user-select: none; -webkit-user-select: none; } /* --split: share of the left side */
+.tot.pick-hers { --split: var(--pick); }
+.tot.pick-his { --split: calc(1 - var(--pick)); }
+.tot-side { position: relative; flex: var(--split) 1 0; min-width: 0; overflow: hidden; transition: flex-grow 1.1s var(--ease); }
+.tot-side + .tot-side { flex-grow: calc(1 - var(--split)); }
+.tot.is-dragging :is(.tot-side, .tot-line) { transition: none; }
+.tot-line { position: absolute; z-index: 2; top: 0; bottom: 0; left: calc(var(--split) * 100%); width: 44px; margin-left: -22px; cursor: ew-resize; touch-action: pan-y; transition: left 1.1s var(--ease); }
+.tot-line::before { content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: rgb(255 255 255 / 0.75); }
+.tot-line span, .tot-line span::after { position: absolute; left: 50%; top: 50%; width: 12px; height: 12px; margin: -6px 0 0 -6px; border-radius: 50%; }
+.tot-line span { background: var(--gold); box-shadow: 0 0 0 1px #fff; transition: transform 0.5s var(--ease); }
+.tot-line span::after { content: ''; left: 0; top: 0; margin: 0; border: 1px solid #fff; animation: spot-pulse 2.8s var(--ease) infinite; }
+.tot-line:hover span, .tot.is-dragging .tot-line span { transform: scale(1.4); }
+.tot.is-picked .tot-line span::after { animation: none; opacity: 0; }
 .tot-hit { position: absolute; inset: 0; transition: inset 1.1s var(--ease); }
 .tot-side.is-on .tot-hit { inset: 0 0 0 56%; }
 .tot-hit img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.4s var(--ease); }
+.tot-side.is-dark .tot-hit::after { content: ''; position: absolute; inset: 45% 0 0; background: linear-gradient(transparent, rgb(0 0 0 / 0.5)); transition: opacity 0.8s; } /* lets white type sit on the photograph */
+.tot-side.is-on .tot-hit::after { opacity: 0; }
 .tot-side.is-on .tot-hit img { transform: scale(1.04); }
 .tot-text { position: absolute; left: 0; bottom: 0; width: 100%; padding: 0 clamp(1rem, 1.6vw, 1.6rem) clamp(1rem, 2.4vh, 1.6rem); pointer-events: none; transition: opacity 0.5s; }
 .tot-side.is-on .tot-text { width: 56%; }
@@ -178,6 +190,9 @@ em { font-style: italic; color: var(--gold-deep); }
 .tot-num { margin: 0 0 0.4rem; font-family: var(--serif); font-size: 0.78rem; color: var(--ink-soft); }
 .tot-side.is-on .tot-num { display: none; }
 .tot-name { font-size: clamp(1.5rem, 2.3vw, 2.5rem); line-height: 1; }
+.tot-lead { display: grid; grid-template-rows: 1fr; transition: grid-template-rows 0.9s var(--ease), opacity 0.5s; }
+.tot-lead p { overflow: hidden; margin: 0; padding-bottom: 0.35rem; font-family: var(--serif); font-style: italic; font-size: clamp(0.9rem, 1.1vw, 1.1rem); line-height: 1.3; }
+.tot-side.is-on .tot-lead { grid-template-rows: 0fr; opacity: 0; }
 .tot-detail { display: grid; grid-template-rows: 0fr; opacity: 0; transition: grid-template-rows 0.9s var(--ease), opacity 0.6s; }
 .tot-detail > div { overflow: hidden; }
 .tot-side.is-on .tot-detail { grid-template-rows: 1fr; opacity: 1; transition-delay: 0.25s; }
@@ -249,7 +264,7 @@ em { font-style: italic; color: var(--gold-deep); }
   .ptitle { font-size: clamp(2.6rem, 12.5vw, 4rem); }
   .swipe-hint { display: block; margin-top: 0.9rem; color: var(--ink-soft); }
   .tot { flex: none; height: 50svh; }
-  .tot.is-picked .tot-side { flex-grow: 0.18; }
+  .tot { --pick: 0.92; }
   .tot-side.is-on .tot-hit { inset: 0 0 0 64%; }
   .tot-side.is-on .tot-text { width: 64%; }
   .tot-name { font-size: 1.7rem; }

@@ -49,6 +49,7 @@ export const PERFUMES = [
       ['Base', 'Sandalwood, amber, soft musk'],
     ],
     shots: [
+      { src: '/campaign/couple-vanilla.webp', w: 1024, h: 1536, alt: 'Lila and Hashim in silver and ivory wedding wear, holding a bottle of Crème Vanille Elixir together', dark: true, pos: '58% 50%' },
       { src: '/campaign/vanilla-silk.webp', w: 1024, h: 1536, alt: 'Crème Vanille Elixir bottle resting in folds of ivory silk' },
       { src: '/campaign/vanilla-oud.webp', w: 1024, h: 1536, alt: 'Crème Vanille Elixir bottle on cream satin with vanilla pods and oud wood' },
     ],
