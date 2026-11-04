@@ -1,6 +1,5 @@
 import { Check, Copy, Phone } from 'lucide-react'
 import { PHONES } from './data'
-import { spray } from './GoldDust'
 
 export const MOTION = '(prefers-reduced-motion: no-preference)'
 
@@ -13,12 +12,7 @@ export function Drop({ className }: { className?: string }) {
   )
 }
 
-export const sprayFrom = (el: Element, color: string) => {
-  const r = el.getBoundingClientRect()
-  spray(r.left + r.width / 2, r.top + r.height / 2, color, 60)
-}
-
-/* ---------------- Phones (book band + dialog) ---------------- */
+/* Phone numbers: tap to call, or copy */
 export function Phones({ copy, copied }: { copy: (text: string) => void; copied: string | null }) {
   return PHONES.map((ph) => (
     <div className="phone" key={ph.href}>

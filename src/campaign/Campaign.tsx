@@ -1,18 +1,18 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useLayoutEffect, useRef, useState, type CSSProperties } from 'react'
 import gsap from 'gsap'
 import { ScrambleTextPlugin } from 'gsap/ScrambleTextPlugin'
 import { SplitText } from 'gsap/SplitText'
-import { SITE } from './data'
-import GoldDust from './GoldDust'
-import { Drop, MOTION } from './panels'
-import { Scent, Story } from './pages'
+import { CREDITS, PERFUMES, SITE, TIKTOK } from './data'
+import GoldDust, { spray } from './GoldDust'
+import { Drop, MOTION, Phones } from './panels'
+import Sheet from './Sheet'
 import './campaign.css'
 
 gsap.registerPlugin(ScrambleTextPlugin, SplitText)
 
 export default function Campaign() {
   const root = useRef<HTMLDivElement>(null)
-  const [pane, setPane] = useState(0) // phones only: which of the two screens is showing
+  const [open, setOpen] = useState<string | null>(null)
   const [copied, setCopied] = useState<string | null>(null)
 
   const copy = async (text: string) => {
@@ -25,16 +25,9 @@ export default function Campaign() {
     }
   }
 
-  // Phones: the pager follows whichever screen fills most of the view.
-  useEffect(() => {
-    const onScroll = () => setPane(document.getElementById('scent')!.getBoundingClientRect().top < innerHeight / 2 ? 1 : 0)
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
-
-  // Book now reveals the numbers in place: on a phone it glides down to the second screen, then they glow gold.
+  // Book now: glide to the numbers (they sit beside the photos on desktop, below them on phones), then they glow gold.
   const book = () => {
-    document.getElementById('contact')!.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' })
+    document.getElementById('contact')!.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
     gsap.fromTo('.contact .phone a', { color: '#c9a24e' }, { color: '#0a0a0a', duration: 1.8, delay: 0.3, ease: 'power2.in', clearProps: 'color' })
   }
 
@@ -50,9 +43,11 @@ export default function Campaign() {
           .from('.loader-word span', { yPercent: 110, stagger: 0.035, duration: 0.7 }, '-=0.5')
           .to('.loader', { clipPath: 'inset(0% 0% 100% 0%)', duration: 0.9, ease: 'expo.inOut' }, '+=0.15')
           .set('.loader', { display: 'none' })
-          .from('.hero-ph img', { clipPath: 'inset(100% 0% 0% 0%)', scale: 1.15, duration: 1.5, ease: 'expo.inOut', clearProps: 'clipPath,scale' }, '-=0.5')
+          .from('.portrait-media', { clipPath: 'inset(100% 0% 0% 0%)', duration: 1.4, stagger: 0.18, ease: 'expo.inOut', clearProps: 'clipPath' }, '-=0.5')
+          .from('.portrait img', { scale: 1.25, duration: 1.9, stagger: 0.18, clearProps: 'transform' }, '<')
           .from('.ptitle .w', { yPercent: 110, stagger: 0.07, duration: 1.1 }, '<0.4')
-          .from('.pi', { y: 24, opacity: 0, stagger: 0.08, duration: 0.9, clearProps: 'transform,opacity' }, '<0.2')
+          .from('.cap > *', { y: 18, opacity: 0, stagger: 0.06, duration: 0.9, clearProps: 'transform,opacity' }, '<0.3')
+          .from('.pi', { y: 24, opacity: 0, stagger: 0.08, duration: 0.9, clearProps: 'transform,opacity' }, '<0.1')
           .from('.nav', { opacity: 0, y: -16, duration: 0.9, clearProps: 'transform,opacity' }, '<')
         gsap.utils.toArray<HTMLElement>('.scramble').forEach((s) => {
           // Keep the text on the element: a re-run (StrictMode) would otherwise read the already-blanked node.
@@ -67,10 +62,12 @@ export default function Campaign() {
         const cx = gsap.quickTo(cursor, 'x', { duration: 0.3, ease: 'power3' })
         const cy = gsap.quickTo(cursor, 'y', { duration: 0.3, ease: 'power3' })
         const move = (e: PointerEvent) => {
+          const t = e.target as Element
           cursor.style.opacity = '1'
           cx(e.clientX)
           cy(e.clientY)
-          cursor.classList.toggle('is-link', !!(e.target as Element).closest('a, button'))
+          cursor.classList.toggle('is-view', !!t.closest('.portrait-media'))
+          cursor.classList.toggle('is-link', !t.closest('.portrait-media') && !!t.closest('a, button'))
         }
         window.addEventListener('pointermove', move)
         document.documentElement.classList.add('has-cursor')
@@ -114,18 +111,71 @@ export default function Campaign() {
           <Drop className="brand-drop" />
           <span>OudTopia</span>
         </a>
-        <p className="pager" aria-hidden="true">
-          <span className={pane === 0 ? 'on' : ''}>01</span> / <span className={pane === 1 ? 'on' : ''}>02</span>
-        </p>
+        <p className="nav-mid scramble">The His &amp; Hers Edit</p>
         <button className="btn" data-magnetic onClick={book}>Book now</button>
       </header>
 
-      {/* Desktop: one editorial page. Phones: two full screens, one below the other. */}
-      <main className="spread">
-        <Story />
-        <Scent copy={copy} copied={copied} />
+      <main className="page">
+        <div className="intro">
+          <p className="eyebrow pi">OudTopia · Lila &amp; Hashim</p>
+          <h1 className="ptitle">Two drops. <br />One <em>utopia.</em></h1>
+          <p className="intro-sub pi">
+            Lila wears Purple Drip, Hashim wears Crème Vanille Elixir. Two OudTopia fragrances, made to be worn side by side.
+          </p>
+          <p className="whisper pi">Tap a photograph to meet the scent</p>
+        </div>
+
+        {/* The two photographs: side by side on desktop, one above the other on phones. Each opens its perfume. */}
+        <div className="duo">
+          {PERFUMES.map((p, i) => (
+            <button
+              className="portrait"
+              key={p.id}
+              style={{ '--liquid': p.liquid } as CSSProperties}
+              aria-haspopup="dialog"
+              aria-label={`${p.who}: ${p.name}. Open the scent`}
+              onClick={(e) => {
+                spray(e.clientX || innerWidth / 2, e.clientY || innerHeight / 2, p.liquid, 90)
+                setOpen(p.id)
+              }}
+            >
+              <span className="portrait-media">
+                <span className="portrait-zoom">
+                  <img src={p.portrait.src} alt={p.portrait.alt} width={p.portrait.w} height={p.portrait.h} style={{ objectPosition: p.portrait.pos }} fetchPriority={i === 0 ? 'high' : undefined} />
+                </span>
+              </span>
+              <span className="cap">
+                <span className="who">0{i + 1} · {p.who} · {p.model}</span>
+                <span className="cap-name">{p.name}</span>
+                <span className="cap-foot">
+                  <span className="cap-line">{p.line}</span>
+                  <span className="cap-cta">Discover</span>
+                </span>
+              </span>
+            </button>
+          ))}
+        </div>
+
+        <div className="contact pi" id="contact">
+          <p className="eyebrow">Call or text to book</p>
+          <Phones copy={copy} copied={copied} />
+          <a className="link-gold" href={TIKTOK} target="_blank" rel="noreferrer">TikTok @oudtopia</a>
+        </div>
+
+        <footer className="foot pi">
+          <dl className="credits">
+            {CREDITS.map((c) => (
+              <div key={c.role}><dt>{c.role}</dt><dd>{c.name}</dd></div>
+            ))}
+          </dl>
+          <p className="foot-row">
+            <a href={SITE} target="_blank" rel="noreferrer">www.oudtopia.co.uk</a>
+            <span>© 2026 OudTopia</span>
+          </p>
+        </footer>
       </main>
 
+      <Sheet perfume={PERFUMES.find((p) => p.id === open) ?? null} onClosed={() => setOpen(null)} copy={copy} copied={copied} />
       <p className={`toast ${copied ? 'is-on' : ''}`} role="status">{copied ? `Copied ${copied}` : ''}</p>
     </div>
   )
